@@ -1,0 +1,17 @@
+import NavLink from "./nav-link";
+
+export default function NavBar() {
+
+    return (
+            <nav className="">
+                <ul>
+                    <li>
+                        <NavLink href="/">Strona główna</NavLink>
+                    </li>
+                    <li>
+                        <NavLink href="/autorzy">Autorzy</NavLink>
+                    </li>
+                </ul>
+            </nav>
+    );
+  }
