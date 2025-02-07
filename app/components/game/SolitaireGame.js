@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from './SolitaireGame.module.css'
+import styles from './SolitaireGame.module.css';
+
 // Stałe dotyczące gry
 const PILES_COUNT = 10; // liczba stosów głównych (tableau)
 const COMPLETE_PILES_COUNT = 8; // liczba stosów "skończonych" (foundation)
-
 const suitsOneColor = ['♠'];
 const suitsTwoColors = ['♠', '♥'];
 const suitsFourColors = ['♠', '♥', '♦', '♣'];
@@ -102,6 +102,9 @@ const SolitaireGame = ({ saveScore, user }) => {
   const [moveHistory, setMoveHistory] = useState([]);
   const [score, setScore] = useState(100);
   const [difficulty, setDifficulty] = useState('one-color');
+  const [isWin, setIsWin] = useState(false);
+  const [winDetails, setWinDetails] = useState(null);
+  const [playerName, setPlayerName] = useState(user?.name || '');
 
   // Inicjalizacja gry i uruchomienie timera przy zmianie trudności
   useEffect(() => {
@@ -251,7 +254,7 @@ const SolitaireGame = ({ saveScore, user }) => {
       valueOrder[topCard.value] === valueOrder[movingCards[0].value] + 1 &&
       (difficulty === 'one-color' ||
         (topCard.suit !== movingCards[0].suit ||
-         (topCard.suit === movingCards[0].suit && areAllSameSuit(movingCards))));
+          (topCard.suit === movingCards[0].suit && areAllSameSuit(movingCards))));
 
     if (canMoveToEmptyPile || canMoveToNonEmptyPile) {
       saveGameState();
@@ -313,13 +316,11 @@ const SolitaireGame = ({ saveScore, user }) => {
         if (newPiles[pileIndex].length > 0) {
           newPiles[pileIndex][newPiles[pileIndex].length - 1].isRevealed = true;
         }
-
+        
         setPiles(newPiles);
         setCompletePiles(newCompletePiles);
-
         const bonus = difficultySettings[difficulty].completeBonus;
         setScore((prev) => prev + bonus);
-
         checkWinCondition(newCompletePiles);
       }
     }
@@ -327,14 +328,12 @@ const SolitaireGame = ({ saveScore, user }) => {
 
   // Sprawdzenie warunku wygranej: wszystkie completePiles muszą być wypełnione
   const checkWinCondition = (updatedCompletePiles) => {
-    const isWin = updatedCompletePiles.every((pile) => pile.length > 0);
-    if (isWin) {
+    let hasWon = updatedCompletePiles.every((pile) => pile.length > 0);
+    if (hasWon) {
       const endTime = new Date();
       const timeSpent = (endTime - startTime) / 1000;
-      // Używamy stanu score, który jest dostępny dzięki useState
-      saveScore(score, timeSpent, user.name, difficulty);
-      alert(`Gratulacje! Twój wynik: ${score}, Czas gry: ${timeSpent} sekundy.`);
-      router.push('/');
+      setWinDetails({ score, timeSpent, difficulty});
+      setIsWin(true);
     }
   };
 
@@ -364,13 +363,38 @@ const SolitaireGame = ({ saveScore, user }) => {
     const randomScore = Math.floor(Math.random() * 501) + 200;
     const difficulties = ['one-color', 'two-colors', 'four-colors'];
     const randomDifficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
-    saveScore(randomScore, timeSpent, user.name, randomDifficulty);
-    alert(
-      `Gratulacje! Twój wynik: ${randomScore}, Czas gry: ${timeSpent} sekundy, ` +
-      `Poziom trudności: ${randomDifficulty}.`
-    );
-    router.push('/');
+    setWinDetails({ score: randomScore, timeSpent, difficulty: randomDifficulty});
+    setIsWin(true);
   };
+
+  // po kliknięciu przycisku "Zapisz"
+  const handleSaveWin = () => {
+    if (winDetails) {
+      saveScore(winDetails.score, winDetails.timeSpent, playerName, winDetails.difficulty);
+      router.push('/');
+    }
+  };
+
+  // modal wygranej
+  const WinModal = ({ winDetails, playerName, setPlayerName, onSave }) => (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modal}>
+        <h2>Gratulacje!</h2>
+        <p>
+          Wynik: {winDetails.score}<br />
+          Czas gry: {winDetails.timeSpent} sekund<br />
+          Poziom trudności: {winDetails.difficulty}
+        </p>
+        <input
+          type="text"
+          placeholder="Podaj nazwę gracza"
+          value={playerName}
+          onChange={(e) => setPlayerName(e.target.value)}
+        />
+        <button onClick={onSave}>Zapisz</button>
+      </div>
+    </div>
+  );
 
   return (
     <div>
@@ -453,15 +477,22 @@ const SolitaireGame = ({ saveScore, user }) => {
           ))}
         </div>
       </div>
-  
-      {/* Przyciski funkcyjne */}
+      {/* przyciski funkcyjne */}
       <button onClick={startNewGame}>Nowa gra</button>
       <button onClick={undoLastMove}>Cofnij</button>
       <button onClick={simulateWin}>Oszukaj</button>
       <button onClick={() => router.push('/')}>Powrót</button>
+
+      {isWin && winDetails && (
+        <WinModal
+          winDetails={winDetails}
+          playerName={playerName}
+          setPlayerName={setPlayerName}
+          onSave={handleSaveWin}
+        />
+      )}
     </div>
   );
-  
 };
 
 export default SolitaireGame;
