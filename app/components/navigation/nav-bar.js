@@ -4,13 +4,12 @@ import logoImg from '@/assets/logo.png';
 export default function NavBar() {
 
     return (
-            <nav className="flex items-center p-8">
-                <NavLink href="/">
-                    <img src={logoImg.src} alt="A plate with food on it" />
-                </NavLink>
-                <ul className="flex g-1"> 
+            <nav className="flex p-8 pl-20 pr-20 items-stretch">
+                <ul className="flex justify-between w-full items-center"> 
                     <li>
-                        <NavLink href="/autorzy">Autorzy</NavLink>
+                        <NavLink href="/">
+                            <img src={logoImg.src} alt="A plate with food on it" />
+                        </NavLink>
                     </li>
                     <li>
                         <NavLink href="/autorzy">Autorzy</NavLink>
