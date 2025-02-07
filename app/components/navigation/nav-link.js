@@ -9,7 +9,8 @@ export default function NavLink({href, children}){
     return (
         <Link
             href={href}
-            className=""
+            className="radial-gradient p-10 rounded-full"
+
             >
                 {children}
         </Link>

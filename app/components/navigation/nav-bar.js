@@ -1,15 +1,17 @@
 import NavLink from "./nav-link";
 import logoImg from '@/assets/logo.png';
+import Link from "next/link";
 
 export default function NavBar() {
 
     return (
-            <nav className="flex p-8 pl-20 pr-20 items-stretch">
+        <div className="text-lg font-bold">
+            <nav className=" flex p-8 pl-20 pr-20 items-stretch">
                 <ul className="flex justify-between w-full items-center"> 
                     <li>
-                        <NavLink href="/">
-                            <img src={logoImg.src} alt="A plate with food on it" />
-                        </NavLink>
+                        <Link href="/">
+                            <img src={logoImg.src} alt="Logo z kartami" />
+                        </Link>
                     </li>
                     <li>
                         <NavLink href="/autorzy">Autorzy</NavLink>
@@ -25,5 +27,7 @@ export default function NavBar() {
                     </li>
                 </ul>
             </nav>
+        </div>
+            
     );
   }
