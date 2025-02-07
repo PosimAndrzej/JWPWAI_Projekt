@@ -331,7 +331,7 @@ const SolitaireGame = ({ saveScore, user }) => {
     let hasWon = updatedCompletePiles.every((pile) => pile.length > 0);
     if (hasWon) {
       const endTime = new Date();
-      const timeSpent = (endTime - startTime) / 1000;
+      const timeSpent = Math.floor(endTime - startTime) / 1000;
       setWinDetails({ score, timeSpent, difficulty});
       setIsWin(true);
     }
@@ -386,6 +386,7 @@ const SolitaireGame = ({ saveScore, user }) => {
           Poziom trudności: {winDetails.difficulty}
         </p>
         <input
+          autoFocus
           type="text"
           placeholder="Podaj nazwę gracza"
           value={playerName}
