@@ -11,6 +11,12 @@ export default function NavBar() {
                     <li>
                         <NavLink href="/autorzy">Autorzy</NavLink>
                     </li>
+                    <li>
+                        <NavLink href="/gra">Gra</NavLink>
+                    </li>
+                    <li>
+                        <NavLink href="/ranking">Ranking</NavLink>
+                    </li>
                 </ul>
             </nav>
     );
