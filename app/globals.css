@@ -19,3 +19,11 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.radial-gradient {
+  background: radial-gradient(circle, white, transparent);
+}
+
+.radial-gradient:hover {
+  background: radial-gradient(circle, orange, transparent);
+}
