@@ -1,6 +1,7 @@
 export default function Background() {
     return (
-        <div className="-z-10 absolute w-screen ">
+        <>
+        <div className="-z-10 absolute w-screen h-screen bg-gradient-to-t from-[#115e87] to-[#0d3449]">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
                 <defs>
                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -20,5 +21,6 @@ export default function Background() {
                 ></path>
             </svg>
         </div>
+        </>
     );
 }

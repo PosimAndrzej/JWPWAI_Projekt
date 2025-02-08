@@ -23,3 +23,7 @@ body {
 .radial-gradient {
   background: radial-gradient(circle, white, transparent);
 }
+
+.radial-gradient:hover {
+  background: radial-gradient(circle, orange, transparent);
+}

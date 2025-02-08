@@ -3,7 +3,7 @@ import { getRankings } from '@/lib/rankings';
 export default async function Ranking() {
     const rankings = await getRankings();
     return (
-        <main className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4 py-8">
+        <main className="min-h-screen flex flex-col items-center justify-center px-4 py-8">
           <h1 className="text-4xl font-semibold text-center text-blue-600 mb-4">
             Ranking
           </h1>
