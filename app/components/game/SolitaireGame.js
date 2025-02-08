@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from './SolitaireGame.module.css'
-// Stałe dotyczące gry
-const PILES_COUNT = 10; // liczba stosów głównych (tableau)
-const COMPLETE_PILES_COUNT = 8; // liczba stosów "skończonych" (foundation)
+import styles from './SolitaireGame.module.css';
 
+// Stałe dotyczące gry
+const PILES_COUNT = 10; // liczba stosów głównych
+const COMPLETE_PILES_COUNT = 8; // liczba stosów "skończonych"
 const suitsOneColor = ['♠'];
 const suitsTwoColors = ['♠', '♥'];
 const suitsFourColors = ['♠', '♥', '♦', '♣'];
@@ -55,7 +55,7 @@ function createEmptyPiles(count) {
   return Array.from({ length: count }, () => []);
 }
 
-// Prosta funkcja głębokiego klonowania
+// Funkcja głębokiego klonowania
 function deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
@@ -80,7 +80,7 @@ function generateDeck(difficultyKey) {
   return deck;
 }
 
-// Tasowanie talii metodą Fisher-Yates
+// Tasowanie talii
 function shuffleDeck(deck) {
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -102,6 +102,9 @@ const SolitaireGame = ({ saveScore, user }) => {
   const [moveHistory, setMoveHistory] = useState([]);
   const [score, setScore] = useState(100);
   const [difficulty, setDifficulty] = useState('one-color');
+  const [isWin, setIsWin] = useState(false);
+  const [winDetails, setWinDetails] = useState(null);
+  const [playerName, setPlayerName] = useState(user?.name || '');
 
   // Inicjalizacja gry i uruchomienie timera przy zmianie trudności
   useEffect(() => {
@@ -251,7 +254,7 @@ const SolitaireGame = ({ saveScore, user }) => {
       valueOrder[topCard.value] === valueOrder[movingCards[0].value] + 1 &&
       (difficulty === 'one-color' ||
         (topCard.suit !== movingCards[0].suit ||
-         (topCard.suit === movingCards[0].suit && areAllSameSuit(movingCards))));
+          (topCard.suit === movingCards[0].suit && areAllSameSuit(movingCards))));
 
     if (canMoveToEmptyPile || canMoveToNonEmptyPile) {
       saveGameState();
@@ -313,13 +316,11 @@ const SolitaireGame = ({ saveScore, user }) => {
         if (newPiles[pileIndex].length > 0) {
           newPiles[pileIndex][newPiles[pileIndex].length - 1].isRevealed = true;
         }
-
+        
         setPiles(newPiles);
         setCompletePiles(newCompletePiles);
-
         const bonus = difficultySettings[difficulty].completeBonus;
         setScore((prev) => prev + bonus);
-
         checkWinCondition(newCompletePiles);
       }
     }
@@ -327,14 +328,12 @@ const SolitaireGame = ({ saveScore, user }) => {
 
   // Sprawdzenie warunku wygranej: wszystkie completePiles muszą być wypełnione
   const checkWinCondition = (updatedCompletePiles) => {
-    const isWin = updatedCompletePiles.every((pile) => pile.length > 0);
-    if (isWin) {
+    let hasWon = updatedCompletePiles.every((pile) => pile.length > 0);
+    if (hasWon) {
       const endTime = new Date();
-      const timeSpent = (endTime - startTime) / 1000;
-      // Używamy stanu score, który jest dostępny dzięki useState
-      saveScore(score, timeSpent, user.name, difficulty);
-      alert(`Gratulacje! Twój wynik: ${score}, Czas gry: ${timeSpent} sekundy.`);
-      router.push('/');
+      const timeSpent = Math.floor(endTime - startTime) / 1000;
+      setWinDetails({ score, timeSpent, difficulty});
+      setIsWin(true);
     }
   };
 
@@ -364,17 +363,48 @@ const SolitaireGame = ({ saveScore, user }) => {
     const randomScore = Math.floor(Math.random() * 501) + 200;
     const difficulties = ['one-color', 'two-colors', 'four-colors'];
     const randomDifficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
-    saveScore(randomScore, timeSpent, user.name, randomDifficulty);
-    alert(
-      `Gratulacje! Twój wynik: ${randomScore}, Czas gry: ${timeSpent} sekundy, ` +
-      `Poziom trudności: ${randomDifficulty}.`
-    );
-    router.push('/');
+    setWinDetails({ score: randomScore, timeSpent, difficulty: randomDifficulty});
+    setIsWin(true);
   };
+
+  // Po kliknięciu przycisku "Zapisz"
+  const handleSaveWin = () => {
+    if (winDetails) {
+      saveScore(winDetails.score, winDetails.timeSpent, playerName, winDetails.difficulty);
+      router.push('/');
+    }
+  };
+
+  // Modal wygranej
+  const WinModal = ({ winDetails, playerName, setPlayerName, onSave }) => (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modal}>
+        <h2>Gratulacje!</h2>
+        <p>
+          Wynik: {winDetails.score}<br />
+          Czas gry: {winDetails.timeSpent} sekund<br />
+          Poziom trudności: {winDetails.difficulty}
+        </p>
+        <input
+          autoFocus
+          type="text"
+          placeholder="Podaj nazwę gracza"
+          value={playerName}
+          onChange={(e) => setPlayerName(e.target.value)}
+        />
+        <button onClick={onSave}>Zapisz</button>
+      </div>
+    </div>
+  );
 
   return (
     <div>
-  
+
+  <h1 class="text-5xl font-bold flex items-center justify-center ">
+    Pasjans pająk
+  </h1>
+
+
       {/* Informacje o grze */}
       <div className={styles.gameInfo}>
         <div className={styles.timeElapsed}>Czas: {timeElapsed} sec</div>
@@ -453,7 +483,6 @@ const SolitaireGame = ({ saveScore, user }) => {
           ))}
         </div>
       </div>
-  
       {/* Przyciski funkcyjne */}
       <div className="flex justify-between w-full items-center p-5">
         <button onClick={startNewGame} className="bg-indigo-400 rounded-full p-2 font-bold hover:bg-indigo-700 w-40">Nowa gra</button>
@@ -461,10 +490,16 @@ const SolitaireGame = ({ saveScore, user }) => {
         <button onClick={simulateWin} className="bg-indigo-400 rounded-full p-2 font-bold hover:bg-indigo-700 w-40">Oszukaj</button>
         <button onClick={() => router.push('/')} className="bg-indigo-400 rounded-full p-2 font-bold hover:bg-indigo-700 w-40">Powrót</button>
       </div>
-        
+      {isWin && winDetails && (
+        <WinModal
+          winDetails={winDetails}
+          playerName={playerName}
+          setPlayerName={setPlayerName}
+          onSave={handleSaveWin}
+        />
+      )}
     </div>
   );
-  
 };
 
 export default SolitaireGame;
