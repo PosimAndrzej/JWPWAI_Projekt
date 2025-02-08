@@ -374,7 +374,6 @@ const SolitaireGame = ({ saveScore, user }) => {
 
   return (
     <div>
-      <h1>Pasjans pająk</h1>
   
       {/* Informacje o grze */}
       <div className={styles.gameInfo}>
@@ -383,12 +382,13 @@ const SolitaireGame = ({ saveScore, user }) => {
       </div>
   
       {/* Wybór trudności */}
-      <div>
-        <label htmlFor="difficulty">Wybierz trudność: </label>
+      <div className="pl-5 pb-5">
+        <label htmlFor="difficulty" className="font-bold">Wybierz trudność: </label>
         <select
           id="difficulty"
           value={difficulty}
           onChange={(e) => setDifficulty(e.target.value)}
+          className="bg-indigo-400 rounded-full w-40 h-10 font-bold"
         >
           <option value="one-color">Jeden kolor</option>
           <option value="two-colors">Dwa kolory</option>
@@ -455,10 +455,13 @@ const SolitaireGame = ({ saveScore, user }) => {
       </div>
   
       {/* Przyciski funkcyjne */}
-      <button onClick={startNewGame}>Nowa gra</button>
-      <button onClick={undoLastMove}>Cofnij</button>
-      <button onClick={simulateWin}>Oszukaj</button>
-      <button onClick={() => router.push('/')}>Powrót</button>
+      <div className="flex justify-between w-full items-center p-5">
+        <button onClick={startNewGame} className="bg-indigo-400 rounded-full p-2 font-bold hover:bg-indigo-700 w-40">Nowa gra</button>
+        <button onClick={undoLastMove} className="bg-indigo-400 rounded-full p-2 font-bold hover:bg-indigo-700 w-40">Cofnij</button>
+        <button onClick={simulateWin} className="bg-indigo-400 rounded-full p-2 font-bold hover:bg-indigo-700 w-40">Oszukaj</button>
+        <button onClick={() => router.push('/')} className="bg-indigo-400 rounded-full p-2 font-bold hover:bg-indigo-700 w-40">Powrót</button>
+      </div>
+        
     </div>
   );
   
