@@ -400,11 +400,6 @@ const SolitaireGame = ({ saveScore, user }) => {
   return (
     <div>
 
-  <h1 class="text-5xl font-bold flex items-center justify-center ">
-    Pasjans pająk
-  </h1>
-
-
       {/* Informacje o grze */}
       <div className={styles.gameInfo}>
         <div className={styles.timeElapsed}>Czas: {timeElapsed} sec</div>
