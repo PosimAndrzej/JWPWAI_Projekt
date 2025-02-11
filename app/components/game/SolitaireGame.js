@@ -399,6 +399,9 @@ const SolitaireGame = ({ saveScore, user }) => {
 
   return (
     <div>
+<h1 className="mb-5 flex items-center justify-center text-5xl md:text-7xl font-extrabold text-gray-800">
+  <span className="text-red-500">P</span>asjans <span className="text-blue-500">P</span>ająk
+</h1>
 
       {/* Informacje o grze */}
       <div className={styles.gameInfo}>
